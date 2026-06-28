@@ -23,8 +23,8 @@ plugins {
   alias(libs.plugins.kotlin.serialization)
   alias(libs.plugins.protobuf)
   alias(libs.plugins.hilt.application)
-  alias(libs.plugins.oss.licenses)
   alias(libs.plugins.ksp)
+  alias(libs.plugins.oss.licenses)
   kotlin("kapt")
 }
 
@@ -104,7 +104,6 @@ dependencies {
   implementation(libs.protobuf.javalite)
   implementation(libs.hilt.android)
   implementation(libs.hilt.navigation.compose)
-  implementation(libs.play.services.oss.licenses)
   implementation(platform(libs.firebase.bom))
   implementation(libs.firebase.analytics)
   implementation(libs.firebase.messaging)
@@ -124,6 +123,7 @@ dependencies {
   implementation(libs.mcp.kotlin.sdk)
   implementation(libs.ktor.client.android)
   implementation(libs.ktor.client.core)
+  implementation(libs.play.services.oss.licenses)
 }
 
 protobuf {
