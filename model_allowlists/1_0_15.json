@@ -146,7 +146,7 @@
         "maxTokens": 1024,
         "accelerators": "gpu,cpu"
       },
-      "taskTypes": ["llm_chat", "llm_prompt_lab"],
+      "taskTypes": ["llm_chat", "llm_prompt_lab", "hermes_agent"],
       "bestForTaskTypes": ["llm_chat", "llm_prompt_lab"]
     },
     {
@@ -164,7 +164,7 @@
         "maxTokens": 4096,
         "accelerators": "gpu,cpu"
       },
-      "taskTypes": ["llm_chat", "llm_prompt_lab"]
+      "taskTypes": ["llm_chat", "llm_prompt_lab", "hermes_agent"]
     },
     {
       "name": "DeepSeek-R1-Distill-Qwen-1.5B",
