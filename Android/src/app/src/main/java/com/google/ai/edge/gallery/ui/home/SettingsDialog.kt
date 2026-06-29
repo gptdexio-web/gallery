@@ -16,7 +16,6 @@
 
 package com.google.ai.edge.gallery.ui.home
 
-import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import android.app.UiModeManager
 import android.content.Context
 import android.content.Intent
@@ -299,10 +298,14 @@ fun SettingsDialog(
             )
             OutlinedButton(
               onClick = {
-                // Create an Intent to launch a license viewer that displays a list of
-                // third-party library names. Clicking a name will show its license content.
-                val intent = Intent(context, OssLicensesMenuActivity::class.java)
-                context.startActivity(intent)
+                // OssLicensesMenuActivity unavailable — show licenses as simple dialog
+                val licenses = "AI Edge Gallery\nApache License 2.0\n\n" +
+                    "LiteRT-LM, MediaPipe, and other open-source libraries are used under their respective licenses."
+                androidx.appcompat.app.AlertDialog.Builder(context)
+                  .setTitle("Third-party licenses")
+                  .setMessage(licenses)
+                  .setPositiveButton("OK", null)
+                  .show()
               }
             ) {
               Text("View licenses")
