@@ -20,6 +20,7 @@ import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.launch
 
 private const val SYSTEM_PROMPT = """You are Hermes Agent, a self-improving AI assistant running entirely on your device.
 
@@ -45,26 +46,7 @@ When the user asks you to do something, use the appropriate tools. Always explai
 
 class HermesAgentTask @Inject constructor() : CustomTask {
   private val _updateChannel = Channel<HermesAgentCommand>(Channel.BUFFERED)
-  private val commandFlow = _updateChannel.receiveAsFlow()
-
-  private var memory: HermesMemory? = null
-  private var skills: HermesSkills? = null
-
-  private fun getTools(context: Context): List<com.google.ai.edge.litertlm.ToolProvider> {
-    if (memory == null) memory = HermesMemory(context)
-    if (skills == null) skills = HermesSkills(context)
-    return listOf(
-      tool(
-        HermesAgentTools(
-          memory = memory!!,
-          skills = skills!!,
-          onCommand = {
-            val unused = _updateChannel.trySend(it)
-          }
-        )
-      )
-    )
-  }
+  val commandFlow = _updateChannel.receiveAsFlow()
 
   override val task =
     Task(
@@ -112,9 +94,11 @@ class HermesAgentTask @Inject constructor() : CustomTask {
       tools = listOf(
         tool(
           HermesAgentTools(
-            memory = HermesMemory(context),
-            skills = HermesSkills(context),
-            onCommand = { val unused = _updateChannel.trySend(it) }
+            memory = HermesMemory(context.applicationContext),
+            skills = HermesSkills(context.applicationContext),
+            onCommand = { cmd ->
+              _updateChannel.trySend(cmd)
+            }
           )
         )
       ),
@@ -135,15 +119,20 @@ class HermesAgentTask @Inject constructor() : CustomTask {
   override fun MainScreen(data: Any) {
     val customTaskData = data as CustomTaskData
     val viewModel: HermesAgentViewModel = hiltViewModel()
+    val scope = androidx.compose.runtime.rememberCoroutineScope()
+
+    androidx.compose.runtime.LaunchedEffect(Unit) {
+      scope.launch(kotlinx.coroutines.Dispatchers.Default) {
+        commandFlow.collect { command ->
+          viewModel.handleToolCommand(command)
+        }
+      }
+    }
 
     HermesAgentScreen(
       viewModel = viewModel,
       model = customTaskData.modelManagerViewModel.uiState.value.selectedModel,
-      tools = listOf(),
       bottomPadding = customTaskData.bottomPadding,
-      onCommand = { command ->
-        val unused = _updateChannel.trySend(command)
-      },
     )
   }
 

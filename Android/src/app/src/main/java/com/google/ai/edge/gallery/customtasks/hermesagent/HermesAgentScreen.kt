@@ -1,5 +1,6 @@
 package com.google.ai.edge.gallery.customtasks.hermesagent
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -55,14 +56,14 @@ import com.google.ai.edge.gallery.ui.common.chat.ChatMessageText
 import com.google.ai.edge.gallery.ui.common.chat.ChatMessageWarning
 import com.google.ai.edge.gallery.ui.common.chat.ChatSide
 
+private const val TAG = "AGHermesScreen"
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HermesAgentScreen(
   viewModel: HermesAgentViewModel,
   model: Model,
-  tools: List<com.google.ai.edge.litertlm.ToolProvider>,
   bottomPadding: androidx.compose.ui.unit.Dp,
-  onCommand: (HermesAgentCommand) -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsState()
   var inputText by remember { mutableStateOf("") }
@@ -89,7 +90,7 @@ fun HermesAgentScreen(
             Column {
               Text("Hermes Agent", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
               Text(
-                "Active: ${uiState.activeSkill} | Tools: ${uiState.toolCalls.size}",
+                "Skill: ${uiState.activeSkill} | Tools: ${uiState.toolCalls.size}",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
               )
@@ -125,9 +126,7 @@ fun HermesAgentScreen(
         contentPadding = PaddingValues(vertical = 8.dp)
       ) {
         if (uiState.messages.isEmpty()) {
-          item {
-            WelcomeMessage()
-          }
+          item { WelcomeMessage() }
         }
         items(uiState.messages) { message ->
           ChatBubble(message = message)
@@ -188,7 +187,7 @@ private fun WelcomeMessage() {
       tint = MaterialTheme.colorScheme.primary,
       modifier = Modifier.size(48.dp)
     )
-    Spacer(modifier = Modifier.width(8.dp))
+    Spacer(modifier = Modifier.height(8.dp))
     Text(
       "Hermes Agent",
       style = MaterialTheme.typography.headlineSmall,
